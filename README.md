@@ -2,5 +2,5 @@
 
 ## Data
 
-+ https://www.kaggle.com/rtatman/188-million-us-wildfires
-+ other?
++ Data on wildfires in the US from https://www.kaggle.com/rtatman/188-million-us-wildfires
++ Data on air quality from https://aqs.epa.gov/aqsweb/airdata/download_files.html
