@@ -5,6 +5,10 @@
 + Data on wildfires in the US from https://www.kaggle.com/rtatman/188-million-us-wildfires
 + Data on air quality from https://aqs.epa.gov/aqsweb/airdata/download_files.html
 
+## Slides
+
++ Precompiled slides: https://drive.google.com/open?id=1N69AJakomfIHxaRtY3bH071WKPjhyiVY
+
 ## Fire data -> air quality
 
 ### Predicted quantity: change in AQI
