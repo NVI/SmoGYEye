@@ -1,5 +1,18 @@
 # Smoke Gets in Your Eyes: an Introduction to Data Science miniproject
 
+## TODO
+
+- [ ] prediction model / ML
+    - [ ] determine if predicting wildfire severity works
+    - [ ] look into correlation between wildfires and higher AQI
+
+- [ ] visualize the results
+
+- [ ] write the end user instructions / description of how end users will benefit from the project
+
+- [ ] write the technical report
+
+
 ## Data
 
 + Data on wildfires in the US from https://www.kaggle.com/rtatman/188-million-us-wildfires
