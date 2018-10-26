@@ -50,32 +50,26 @@ def preprocess_site_list(site_file):
     return sites_lat, sites_lon
 
 
-def preprocess_aqi(site_file, aqi_file):
+def preprocess_aqi(sites_lat, sites_lon, aqi_file):
     # Read daily AQI measurements from year XXXX
-    aqi = pd.read_csv(aqi_file)
 
-    # Drop unnecessary columns
-    cols_to_drop = [
-        'State Name', 'State Code', 'county Name', 'County Code',
-        'Number of Sites Reporting'
-    ]
-    aqi.drop(columns=cols_to_drop, inplace=True)
+    # Specify used column names and types to make CSV parsing more efficient
+    col_types = {
+        'AQI': int,
+        'Category': str,
+        'Defining Parameter': str,
+        'Defining Site': str
+    }
 
-    # Get coordinate information for measurement sites
-    lat_coords, lon_coords = preprocess_site_list(site_file)
+    col_names = list(col_types.keys()) + ['Date']
+
+    aqi = pd.read_csv(
+        aqi_file, usecols=col_names, dtype=col_types, parse_dates=['Date'])
 
     # Add column containing the site information (including location
     # coordinates) to each AQI measurement
-    aqi['Latitude'] = aqi['Defining Site'].map(lat_coords)
-    aqi['Longitude'] = aqi['Defining Site'].map(lon_coords)
+    aqi['Latitude'] = aqi['Defining Site'].map(sites_lat)
+    aqi['Longitude'] = aqi['Defining Site'].map(sites_lon)
 
     return aqi
 
-
-# Main function for checking that everything works
-def main():
-    aqi = preprocess_aqi('aqs_sites.csv', 'daily_aqi_by_county_2015.csv')
-    print(aqi.head())
-
-if __name__ == '__main__':
-    main()
