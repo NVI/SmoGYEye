@@ -2,6 +2,12 @@ import pandas as pd
 
 
 def preprocess_site_list(site_file):
+    """Get the location of air quality measurement sites.
+        
+    Return the latitude and longitude coordinates in two dictionaries. 
+    The keys are site codes as strings and the values are coordinates as floats.
+    """
+
     # Make sure that state, county, and site codes are read as strings
     # instead of numbers
     col_types = {'State Code': str, 'County Code': str, 'Site Number': str}
@@ -51,7 +57,15 @@ def preprocess_site_list(site_file):
 
 
 def preprocess_aqi(sites_lat, sites_lon, aqi_file):
-    # Read daily AQI measurements from year XXXX
+    """Convert a CSV file with AQI data into a pandas DataFrame.
+
+    Get the following columns from an AQI data file: Date, AQI, Category,
+    Defining Parameter, and Defining Site. Ensure that dates are parsed as 
+    datetime objects.
+
+    This function also adds coordinate data for the defining site to the data 
+    frame.
+    """
 
     # Specify used column names and types to make CSV parsing more efficient
     col_types = {
@@ -72,4 +86,3 @@ def preprocess_aqi(sites_lat, sites_lon, aqi_file):
     aqi['Longitude'] = aqi['Defining Site'].map(sites_lon)
 
     return aqi
-
