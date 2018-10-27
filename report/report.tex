@@ -1,0 +1,48 @@
+%run:
+%xelatex report.tex
+%bibtex8 --wolfgang report
+%xelatex report.tex
+
+\documentclass[a4paper,12pt]{article}
+\usepackage{fontspec}
+\usepackage[finnish,english]{babel}
+
+\usepackage[backend=bibtex,bibstyle=verbose,citestyle=authoryear-ibid]{biblatex}
+\addbibresource{bibliography.bib}
+
+\interfootnotelinepenalty=10000
+
+\title{Smoke Gets in Your Eyes\\\Large{Miniproject final report}}
+\author{Niko Ilomäki \and Niclas Joswig \and Sampo Savolainen}
+\date{October 29, 2018}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+The miniproject Smoke Gets in Your Eyes concentrates on wildfires and their effects on air quality. The starting point was the dataset 1.88 Million US Wildfires which is available on Kaggle. Given the effects of wildfires on air quality, air quality data was a natural pairing for the wildfire data. There is an abundance of freely available measurement data on air quality published by the U. S. Environmental Protection Agency (EPA).
+
+There are indications that problems with wildfires are only worsening in the United States.\footnote{See for example the recent article \url{https://fivethirtyeight.com/features/wildfires-in-the-u-s-are-getting-bigger/}.} Therefore new solutions that help managing their impact would certainly be helpful.
+
+Although the data used in the project pertains to the United States, similar approach would work with other countries given similar measurement data. In Europe, countries such as Sweden and Greece have suffered greatly from wildfires recently.
+
+\section{Target audience}
+
+While the solution could also be repurposed for individual use (e.g., in the form of a website), the primary target audience is government agencies which could use the model to provide earlier warnings of large changes in air quality. Because the predictions come with different confidence levels and there may be other factors to consider, it seems more reasonable to start the deployment from said agencies where the predictions would be reviewed by expert staff before wider publication.
+
+\section{Technical details}
+
+\section{Future directions}
+
+It seems reasonable to assume that the direction and speed of wind affect where the impact of a wildfire is felt. Therefore integrating them into the model could be beneficial.
+
+Another important step would be to split the prediction into individual components of the air quality index and then reconstruct the index instead of predicting the index directly.
+
+\section{Who did what?}
+
+\nocite{*}
+\printbibliography[title={Bibliography},heading=bibliography]
+
+\end{document}
