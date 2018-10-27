@@ -2,10 +2,14 @@
 *.sqlite
 .ipynb_checkpoints
 *.aux
+*.bbl
+*.blg
+*-blx.bib
 *.log
 *.nav
 *.out
 *.pdf
+*.run.xml
 *.snm
 *.toc
 .vscode
