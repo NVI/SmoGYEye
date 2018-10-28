@@ -52,6 +52,16 @@ This simplistic approach does have several limitations. First, attaching only a 
 
 \subsection{Prediction model}
 
+The task to predict the severity of a wildfire is displayed technically as a classification problem, which predicts the membership to the seven available classes on the basis of ten input features. The classes describe intervalls of areasizes, in which the wildfires with the fitting size are.
+
+We tried to solve this problem with a variety of machine learning algorithms like XGBoost, Decision Trees or Linear Regression, but the best eprformance was achieved by Neural Networks.
+The structure of the network can be seen in figure \cite{}.
+the network consists of five blocks which contain 4 layers each. Every block starts with a Dense layer which have between 256 and 1200 Neurons. After the Dense layers follow Activation layers with the ReLu-function, which is the currently best activation-function for deep neural networks. 
+To improve performance Batchnormalization layers got added into every block, to speed up learning and improve performance with data optimization. That the network overfits get prevented by Dropout layers, which have in our case a low rates from $0.2$ and $0.3$. More Dropout is not needed, because the Dataset is very big by nature, so the variety on data is huge.
+
+After training the model with the SGDOptimizer with a learning-rate of $0.01$, a decay of $1e-6$ and a Momentum of $0.9$, we achieved 65\% accuracy as our best result.
+Considering the fact that there are seven classes, so the random choice has a probability of $1/7$ to be true, the model delivers resonable results.
+
 \subsection{Data analysis and visualization}
 
 \section{Future directions}
