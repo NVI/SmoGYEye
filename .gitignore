@@ -13,3 +13,4 @@
 *.snm
 *.toc
 .vscode
+.Rproj.user
