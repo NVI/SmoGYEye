@@ -24,9 +24,9 @@
 
 The miniproject Smoke Gets in Your Eyes concentrates on wildfires and their effects on air quality. The starting point was the dataset 1.88 Million US Wildfires which is available on Kaggle. Given the effects of wildfires on air quality, air quality data was a natural pairing for the wildfire data. There is an abundance of freely available measurement data on air quality published by the U. S. Environmental Protection Agency (EPA).
 
-There are indications that problems with wildfires are only worsening in the United States.\footnote{See for example the recent article \url{https://fivethirtyeight.com/features/wildfires-in-the-u-s-are-getting-bigger/}.} Therefore new solutions that help managing their impact would certainly be helpful.
+There are indications that problems with wildfires are only worsening in the United States.\footnote{See for example the recent article \url{https://fivethirtyeight.com/features/wildfires-in-the-u-s-are-getting-bigger/}.} The adverse health effects of wildfire smoke have also been noted in media recently.\footnote{See \url{https://www.washingtonpost.com/news/capital-weather-gang/wp/2018/08/07/wildfire-smoke-is-wreaking-havoc-on-the-air-quality-in-the-western-u-s}}As wildfires grow in size and quantity, new solutions that help managing their impact would certainly be helpful.
 
-Although the data used in the project pertains to the United States, similar approach would work with other countries given similar measurement data. In Europe, countries such as Sweden and Greece have suffered greatly from wildfires recently.
+Although the data used in the project pertains to the United States, a similar approach would work with other countries given similar measurement data. In Europe, countries such as Sweden and Greece have suffered greatly from wildfires recently.
 
 \section{Target audience}
 
@@ -34,9 +34,29 @@ While the solution could also be repurposed for individual use (e.g., in the for
 
 \section{Technical details}
 
+This section explains the technical details of implementing different aspects of the project.
+
+\subsection{Data wrangling}
+
+All data wrangling was accomplished using Python and the \texttt{pandas} library.
+
+The data on wildfires are available as a SQLite database. The database contains information on a total of 1.88 million fires in the U.S. between 1992 and 2015, including the discovery and containment dates of the fire, size of the fire, location of the fire, and a host of administrative information such as the agencies and units involved in containing the fire and identifiers for the fire in different systems. We discarded most of this administrative information since it was not pertinent to the task of predicting the severity of the fire. We included the information on the location of the fire (latitude and longitude coordinates), the estimated final size of the fire (in acres and as a categorical class), and the dates of the fire (from discovery to containment).
+
+The air quality data we used are available from the U.S. Environmental Protection Agency. We chose to use daily summaries of AQI (air quality index) divided by county, which was the most fine-grained location distinction available. The data were available as CSV files, each file containing a year of daily summaries. The summary files included location information (state and county names and codes), measurement date, AQI reading and category, the defining parameter (a pollutant category), ID code for the defining site, and the number of sites reporting the measurement. These summaries are available from 1980 to 2018, and we downloaded the files for years corresponding to the wildfire data (1992–2015).
+
+The AQI summary files posed a problem: the exact location of the measurement was not included, and having merely the county information is way too coarse as a location. Fortunately, the EPA also provides a file with information the sites involved in AQI measurements, including the location. We then proceeded to add the exact coordinates for each measurement by mapping the ID code for the defining site with the site's coordinates.
+
+When we had exact location data for each AQI measurement, we combined the measurements with the wildfire data. (to be continued)
+
+\subsection{Prediction model}
+
+\subsection{Data visualization}
+
 \section{Future directions}
 
-It seems reasonable to assume that the direction and speed of wind affect where the impact of a wildfire is felt. Therefore integrating them into the model could be beneficial.
+It seems reasonable to assume that weather conditions, most notably the direction and speed of wind, affect where the smoke impact of a wildfire is felt. Therefore integrating them into the model could be beneficial.
+
+In predicting how severe a wildfire can get, it could be useful to explore more data than what was possible within the scope of this project. For example, it would seem reasonable to assume the size of the fire is affected by the dryness and amount of vegetation in the area. Therefore, using weather data to determine the dryness of the region the wildfire occurs in could help with the prediction. Including the type and amount of combustible vegetation in the area could perhaps be included through explicit data, if such data is available, or roughly estimated by examining the history of wildfires in the area: if fires have occurred recently, there would be less vegetation.
 
 Another important step would be to split the prediction into individual components of the air quality index and then reconstruct the index instead of predicting the index directly.
 
