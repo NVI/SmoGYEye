@@ -68,7 +68,8 @@ aqi_time_series %>%
   ggplot(aes(x = FIRE_SIZE_CLASS, y = value)) +
   geom_bar(aes(fill = variable), position="dodge", stat="identity") +
   labs(x = "Fire size class", y = "Average index") +
-  ggtitle("Air quality")
+  ggtitle("Air quality") +
+  theme(text = element_text(size=22))
 
 ggsave("report/aqi_time_series.png")
 
@@ -85,7 +86,8 @@ co_time_series %>%
   ggplot(aes(x = FIRE_SIZE_CLASS, y = value)) +
   geom_bar(aes(fill = variable), position="dodge", stat="identity") +
   labs(x = "Fire size class", y = "Average concentration") +
-  ggtitle("CO")
+  ggtitle("CO") +
+  theme(text = element_text(size=22))
 
 ggsave("report/co_time_series.png")
 
@@ -102,6 +104,7 @@ so2_time_series %>%
   ggplot(aes(x = FIRE_SIZE_CLASS, y = value)) +
   geom_bar(aes(fill = variable), position="dodge", stat="identity") +
   labs(x = "Fire size class", y = "Average concentration") +
-  ggtitle(expression("SO"[2]))
+  ggtitle(expression("SO"[2])) +
+  theme(text = element_text(size=22))
 
 ggsave("report/so2_time_series.png")
