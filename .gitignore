@@ -1,3 +1,4 @@
+data/
 *.zip
 *.sqlite
 .ipynb_checkpoints
