@@ -6,6 +6,8 @@
 \documentclass[a4paper,12pt]{article}
 \usepackage{fontspec}
 \usepackage[finnish,english]{babel}
+\usepackage[toc,page]{appendix}
+\usepackage{pdflscape}
 
 \usepackage[backend=bibtex,bibstyle=verbose,citestyle=authoryear-ibid]{biblatex}
 \addbibresource{bibliography.bib}
@@ -58,8 +60,8 @@ We tried to solve this problem with a variety of machine learning algorithms, su
 
 \begin{figure}[t]
 	\centering	
-	\includegraphics[scale=0.75]{nn.pdf}	
-	\caption[Struktur des neuronalen Netzes]{Struktur des neuronalen Netzes}
+	\includegraphics[scale=0.65]{nn.pdf}	
+	\caption[Strukture of the neutral network]{Structure of the neutral network}
 	\label{network_structure}
 \end{figure}
 The structure of the network can be seen in figure \ref{network_structure}.
@@ -74,6 +76,8 @@ Considering that there are seven classes, meaning that random choice has a proba
 
 \subsection{Data analysis and visualization}
 
+
+
 \section{Future directions}
 
 It seems reasonable to assume that weather conditions, most notably the direction and speed of wind, affect where the smoke impact of a wildfire is felt. Therefore integrating them into the model could be beneficial.
@@ -86,11 +90,25 @@ In terms of deploying our solution, future work could include a website that aut
 
 \section{Who did what?}
 
-Project planning and design involved the whole team.
+Topic selection, project planning, pitch, project design, and final report involved the whole team.
 
 Sampo was mainly responsible for managing and wrangling most of the air quality data and for combining the air quality data with the wildfire data for the prediction model.
 
-Niclas was responsible for managing the wildfire data, combining wildfire and aqi data, building the prediction model for severity.
+Niclas was responsible for managing the wildfire data, combining wildfire and AQI data, building the prediction model for severity.
+
+Niko looked further into the combined wildfire and AQI data as well as other measurement data, and did the analysis and visualization for that.
+
+\begin{landscape}
+\begin{appendices}
+\section{Measurement data visualizations}
+\subsection{Air quality index}
+\includegraphics[scale=0.5]{aqi_time_series.png}
+\subsection{Carbon monoxide}
+\includegraphics[scale=0.5]{co_time_series.png}
+\subsection{Sulfur dioxide}
+\includegraphics[scale=0.5]{so2_time_series.png}
+\end{appendices}
+\end{landscape}
 
 \nocite{*}
 \printbibliography[title={Bibliography},heading=bibliography]
