@@ -56,7 +56,13 @@ The task to predict the severity of a wildfire is displayed technically as a cla
 
 We tried to solve this problem with a variety of machine learning algorithms, such as XGBoost, Decision Trees and Linear Regression, but the best performance was achieved by Neural Networks.
 
-The structure of the network can be seen in figure \cite{}.
+\begin{figure}[t]
+	\centering	
+	\includegraphics[scale=0.75]{nn.pdf}	
+	\caption[Struktur des neuronalen Netzes]{Struktur des neuronalen Netzes}
+	\label{network_structure}
+\end{figure}
+The structure of the network can be seen in figure \ref{network_structure}.
 
 The network consists of five blocks which contain 4 layers each. Every block starts with a Dense layer that has between 256 and 1200 Neurons. After the Dense layers follow Activation layers with ReLu-function, which is the currently best activation-function for deep neural networks.
 
