@@ -18,7 +18,7 @@ The tool is currently at a proof-of-concept stage, and requires some expert know
 
 The scripts also provide a starting point for further analysis into combining wildfire data with air quality measurements. This also currently requires some expert knowledge. Here is an example plot of combined data:
 
-![Sulfur dioxide time series](report/SO2_time_series.png)
+![Sulfur dioxide time series](report/so2_time_series.png)
 
 ## Data used in SmoGYEye
 
