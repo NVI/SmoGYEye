@@ -16,38 +16,11 @@ SmoGYEye is designed to help public authorities in assessing the potential healt
 
 The tool is currently at a proof-of-concept stage, and requires some expert knowledge to use. The trained machine learning model can be accessed using the Python programming language and freely available open source data science tools. The model can be deployed flexibly according to the using agency's needs: it can be attached to a standalone user interface or incorporated into an existing analysis model.
 
-- a more accurate description of how the tool would actually be used?
+The scripts also provide a starting point for further analysis into combining wildfire data with air quality measurements. This also currently requires some expert knowledge. Here is an example plot of combined data:
 
-## Use case
+![Sulfur dioxide time series](report/SO2_time_series.png)
 
-- this section contains a description of what data is put in and what the prediction/visualization looks like?
-
-## Data
+## Data used in SmoGYEye
 
 + Data on wildfires in the US from https://www.kaggle.com/rtatman/188-million-us-wildfires
 + Data on air quality from https://aqs.epa.gov/aqsweb/airdata/download_files.html
-
-## Slides
-
-+ Precompiled slides: https://drive.google.com/open?id=1N69AJakomfIHxaRtY3bH071WKPjhyiVY
-
-## Fire data -> air quality
-
-### Predicted quantity: change in AQI
-
-How to make robust? Maybe something along the lines:
-
-+ Initial value AQI0: median of three days before the fire
-+ Final value AQI1: second highest of the days during the fire
-+ Change dAQI := AQI1 - AQI0
-
-Is there a meaningful change with the smallest fires? Should they be omitted?
-
-### Contributions of different fires
-
-How to handle multiple simulataneous fires?
-
-+ Without wind direction, weighting contribution by inverse squared distance or similar 
-+ With wind direction (also available from EPA), more complicated (but most likely better) model
-
-Does the above scheme make sense with multiple overlapping fires with different start and end dates?
