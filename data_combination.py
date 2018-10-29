@@ -6,13 +6,24 @@ import math
 from sklearn import preprocessing
 from pandas.tseries.offsets import DateOffset
 from datetime import datetime
+import sys
 
 from preprocess_aqi import preprocess_site_list, preprocess_aqi
+
+LON_AT_EQUATOR = 111
+LAT_IN_KM = 111
 
 
 def get_distance(lat1, lon1, lat2, lon2):
     dist = math.sqrt((lat1 - lat2)**2 + (lon1 - lon2)**2)
     return round(dist, 6)
+
+
+def dist_as_lon_degree(distance, latitude):
+    """A simplified conversion of a specified distance into degrees longitude
+    at a specified latitude"""
+    lon_deg_as_km = LON_AT_EQUATOR * math.cos(math.radians(latitude))
+    return distance / lon_deg_as_km
 
 
 def get_aqis_during_fire(year, start_date, end_date):
@@ -34,9 +45,14 @@ def get_nearest_measurement(fire_lat, fire_lon, aqi_df):
     # from the fire coordinates (this translates to a square are with the fire in the
     # center: the square is approx. 110 km north-south, and the east-west length varies
     # between approx. 37 km and 105 km depending on the latitude)
-    candidates = aqi_df.loc[((abs(aqi_df['Latitude'] - fire_lat) <= 0.5)
-                             & (abs(aqi_df['Longitude'] - fire_lon) <= 0.5))]
-    # If no measurements are within defined range, return NaN
+    # If the dataframe is empty, return an empty Series
+    if aqi_df.empty:
+        return pd.Series()
+    lon_degrees = dist_as_lon_degree(LAT_IN_KM, fire_lat)
+    candidates = aqi_df.loc[(
+        (abs(aqi_df['Latitude'] - fire_lat) <= 0.5)
+        & (abs(aqi_df['Longitude'] - fire_lon) <= lon_degrees / 2))]
+    # If no measurements are within defined range, return an empty Series
     if candidates.empty:
         return pd.Series()
     # Loop through the candidate measurements and get the nearest location
@@ -45,7 +61,6 @@ def get_nearest_measurement(fire_lat, fire_lon, aqi_df):
         for row in candidates.itertuples()
     ])
     return candidates.iloc[nearest]
-
 
 
 # Read wildfire data from SQLITE database
@@ -104,7 +119,7 @@ print("Reading AQI data from CSV files...")
 # containing the AQI data with coordinates added
 aqi = {
     y: preprocess_aqi(sites_lat, sites_lon,
-                    'data/aqi/daily_aqi_by_county_{}.csv'.format(y))
+                      'data/aqi/daily_aqi_by_county_{}.csv'.format(y))
     for y in years
 }
 print("Done")
@@ -113,47 +128,52 @@ print("Done")
 # aqi_all = pd.concat([aqi[y] for y in aqi.keys()], axis=0, ignore_index=True)
 
 # Test script using smaller data set
-# df = df.iloc[df.index.isin(range(1000))]
+# df = df.iloc[:10234, :]
 
-cutoff = 100000
 rows = df.shape[0]
+cutoff = int(rows / 10)
+percent = int(rows / 100)
 nearest_measurements = np.array(np.zeros(rows), dtype=object)
 aqi_readings = np.array(np.zeros(rows), dtype=np.float32)
 
-
 t1 = datetime.now()
 
+counter = 1
+
 for row in df.itertuples():
-    if row.Index % 1000 == 0:
-        print("{}/{}".format(row.Index, rows))
-    aqi_candidates = get_aqis_during_fire(str(row.FIRE_YEAR), row.DISCOVERY_DATE, row.CONT_DATE)
-    if aqi_candidates.empty:
-        nearest_measurements[row.Index] = {}
-        aqi_readings[row.Index] = np.nan
-        continue
-    nearest = get_nearest_measurement(row.LATITUDE, row.LONGITUDE, aqi_candidates)
+    if row.Index % percent == 0:
+        sys.stdout.write("Progress: {}%  \r".format(
+            round((row.Index / rows) * 100, 2)))
+        sys.stdout.flush()
+    aqi_candidates = get_aqis_during_fire(
+        str(row.FIRE_YEAR), row.DISCOVERY_DATE, row.CONT_DATE)
+    nearest = get_nearest_measurement(row.LATITUDE, row.LONGITUDE,
+                                      aqi_candidates)
     nearest_measurements[row.Index] = nearest.to_dict()
     if nearest.empty:
         aqi_readings[row.Index] = np.nan
     else:
         aqi_readings[row.Index] = nearest['AQI']
 
+    # Save partial results in case script fails to run to the end
     if row.Index > 0 and row.Index % cutoff == 0:
         start = row.Index - cutoff
         stop = row.Index
-        subframe = df.iloc[df.index.isin(range(start, stop))]
+        subframe = df.iloc[start:stop, :]
         subframe['AQI'] = aqi_readings[start:stop]
         subframe['AIR_QUALITY'] = nearest_measurements[start:stop]
-        subframe.to_csv('data/wildfire/wildfire_with_aqi_{}-{}.csv'.format(start, stop - 1))
-
+        subframe.to_csv(
+            'data/wildfire/wildfires_with_aqi_v2_{}.csv'.format(
+                str(counter).zfill(2)))
+        counter += 1
 
 df['AQI'] = aqi_readings
 df['AIR_QUALITY'] = nearest_measurements
-df.to_csv('data/wildfire/wildfire_with_aqi_all.csv')
+df.to_csv('data/wildfire/wildfires_with_aqi_v2_all.csv')
 t2 = datetime.now()
 
 delta = t2 - t1
 
-print("Processing {} entries took {} minutes and {} seconds".format(rows,
-                                                    delta.seconds // 60,
-                                                    delta.seconds % 60))
+print()
+print("Processing {} entries took {} minutes and {} seconds".format(
+    rows, delta.seconds // 60, delta.seconds % 60))
