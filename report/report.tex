@@ -8,13 +8,14 @@
 \usepackage[finnish,english]{babel}
 \usepackage[toc,page]{appendix}
 \usepackage{pdflscape}
+\usepackage{enumitem}
 
 \usepackage[backend=bibtex,bibstyle=verbose,citestyle=authoryear-ibid]{biblatex}
 \addbibresource{bibliography.bib}
 
 \interfootnotelinepenalty=10000
 
-\title{Smoke Gets in Your Eyes\\\Large{Miniproject final report}}
+\title{\vspace*{-3cm}Smoke Gets in Your Eyes\\\Large{Miniproject final report}}
 \author{Niko Ilomäki \and Niclas Joswig \and Sampo Savolainen}
 \date{October 29, 2018}
 
@@ -34,9 +35,9 @@ Although the data used in the project pertains to the United States, a similar a
 
 While the solution could also be repurposed for individual use (e.g., in the form of a website), the primary target audience is government agencies which could use the model to provide earlier warnings of large changes in air quality. Because the predictions come with different confidence levels and there may be other factors to consider, it seems more reasonable to start the deployment from said agencies where the predictions would be reviewed by expert staff before wider publication.
 
-\section{Technical details}
+\section{Technical details of the project}
 
-This section explains the technical details of implementing different aspects of the project.
+%This section explains the technical details of implementing different aspects of the project.
 
 \subsection{Data wrangling}
 
@@ -52,49 +53,52 @@ When we had exact location data for each AQI measurement, we combined the measur
 
 This simplistic approach does have several limitations. First, attaching only a single AQI reading to each fire gives only a very brief glimpse at the situation: having readings from the entire duration of a fire allows more insight into the data, and we did accomplish this for some later data analysis. Second, the way the area around the fire was defined was not ideal: the area is rectangular instead of circular, which would make more sense, and since the distance covered by 1 degree of longitude depends on the latitude, the size of the search area varied between fires. However, this rough approximation was sufficient for the purposes of this project and could be improved upon in future work.
 
-\subsection{Prediction model}
+\subsection{Data analysis and visualization}
+
+For further analysis of the relationship of the wildfires and air quality, it was deemed necessary to use longer time series of measurements. Thus, new tools were developed, this time in R. Because mapping wildfires to measurements stations takes a long time, the data from the previous phase was taken as the starting point. To first determine whether there was a tangible relationship between the wildfires and air quality in our model, the following scheme was devised: (N.b. Plots can be found in Appendix A.)
+
+\begin{enumerate}[itemsep=-0.5ex]
+	\item Attach to each wildfire all AQI measurements from the day before the fire started to the day after the fire ended (this guarantees at least one measurement for each fire).
+	\item Calculate several statistics from the series of measurements: first measurement, last measurement, average measurement, lowest measurement, and highest measurement.
+	\item The difference between last and first measurement (\emph{change} in plots) should not be very indicative of the fire since they should be before and after the fire.
+	\item However the difference between highest and first measurement (\emph{max\_change} in plots and below) should indicate how much worse the air quality got during (and possibly because of) the fire.
+	\item On the other hand, difference between lowest and first measurement (\emph{min\_change} in plots) should indicate how much better the air quality got during the fire. It is assumed that the fire should not improve air quality.
+	\item If the previous two differences are of similar size, it apperas very likely that the wildfires are not a good indicator for air quality in our model.
+\end{enumerate}
+
+Unfortunately, the results were disappointing. The two differences were indeed of similar size. Moreover, both grew with fire size, but this appears to be because larger fires last longer: they have longer time series and more variance is realized. With the two classes of largest fires (classes 5 and 6) there appeared to be some difference in favor of \emph{max\_change}, but not enough to build regression on. Thus, focus was shifted from air quality index to two gases that should be especially prevalent during wildfires: carbon monoxide and sulfur dioxide. However, results with the two gases did not impress either. First of all, they were not measured in all locations so there was not a nearby measurement for all fires; thus a subset was used. Results with carbon monoxide was very similar to AQI, with only class 6 fires showing inclination towards \emph{max\_change}. Sulfur dioxide measurements behaved best and would form the best starting point for future improvements. Those results do have their own issues, however, with class 5 implying (not necessarily causing) larger changes than class 6, so that part does seem suspect.
+
+\subsection{Prediction model for wildfire severity}
 
 The task to predict the severity of a wildfire is displayed technically as a classification problem. In the current model, we use the final size of the fire as the indicator for severity, and the model predicts the membership to seven available classes on the basis of ten input features. The classes describe intervals of area sizes, in which the wildfires with the fitting size are.
 
-We tried to solve this problem with a variety of machine learning algorithms, such as XGBoost, Decision Trees and Linear Regression, but the best performance was achieved by Neural Networks.
-
-\begin{figure}[t]
-	\centering	
-	\includegraphics[scale=0.65]{nn.pdf}	
-	\caption[Strukture of the neutral network]{Structure of the neutral network}
-	\label{network_structure}
-\end{figure}
-The structure of the network can be seen in figure \ref{network_structure}.
+We tried to solve this problem with a variety of machine learning algorithms, such as XGBoost, Decision Trees and Linear Regression, but the best performance was achieved by Neural Networks. The structure of the network can be seen in Appendix B.
 
 The network consists of five blocks which contain 4 layers each. Every block starts with a Dense layer that has between 256 and 1200 Neurons. After the Dense layers follow Activation layers with ReLu-function, which is the currently best activation-function for deep neural networks.
 
 To improve performance, Batchnormalization layers were added into every block in order to speed up learning and improve performance with data optimization. Overfitting the network is prevented by using Dropout layers, which have in our case low rates from $0.2$ and $0.3$. More Dropout is not needed, because the Dataset is very large, so the variety on data is huge.
 
-After training the model with the SGDOptimizer with a learning-rate of $0.01$, a decay of $1e-6$ and a Momentum of $0.9$, we achieved 65\% accuracy as our best result.
+After training the model with the SGDOptimizer with a learning-rate of $0.01$, a decay of $10^{-6}$ and a Momentum of $0.9$, we achieved 65\% accuracy as our best result.
 
 Considering that there are seven classes, meaning that random choice has a probability of $1/7$ to be correct, the model delivers reasonable results.
 
-\subsection{Data analysis and visualization}
-
-
-
 \section{Future directions}
 
-It seems reasonable to assume that weather conditions, most notably the direction and speed of wind, affect where the smoke impact of a wildfire is felt. Therefore integrating them into the model could be beneficial.
+It seems reasonable to assume that weather conditions, most notably the direction and speed of wind, affect where the smoke impact of a wildfire is felt. Therefore integrating them into the model could be beneficial. Each fire could also be connected to multiple measurement sites, weighted by distance.
 
 In predicting how severe a wildfire can get, it could be useful to explore more data than what was possible within the scope of this project. For example, it would seem reasonable to assume the size of the fire is affected by the dryness and amount of vegetation in the area. Therefore, using weather data to determine the dryness of the region the wildfire occurs in could help with the prediction. Including the type and amount of combustible vegetation in the area could perhaps be included through explicit data, if such data is available, or roughly estimated by examining the history of wildfires in the area: if fires have occurred recently, there would be less vegetation.
 
-Another important step would be to split the prediction into individual components of the air quality index and then reconstruct the index instead of predicting the index directly.
+Another important aspect would be to split the prediction into individual components of the air quality index and then reconstruct the index instead of predicting the index directly. Some steps into that direction were already taken with carbon monoxide and sulfur dioxide analyses.
 
 In terms of deploying our solution, future work could include a website that automatically updates air quality predictions for ongoing wildfires.
 
 \section{Who did what?}
 
-Topic selection, project planning, pitch, project design, and final report involved the whole team.
+Topic selection, planning, design, and final report involved the whole team.
 
-Sampo was mainly responsible for managing and wrangling most of the air quality data and for combining the air quality data with the wildfire data for the prediction model.
+Sampo was mainly responsible for managing and wrangling most of the AQI data and for combining the AQI data with the wildfire data for the prediction model.
 
-Niclas was responsible for managing the wildfire data, combining wildfire and AQI data, building the prediction model for severity.
+Niclas was responsible for managing the wildfire data, combining wildfire and AQI data, and building the prediction model for severity.
 
 Niko looked further into the combined wildfire and AQI data as well as other measurement data, and did the analysis and visualization for that.
 
@@ -107,6 +111,8 @@ Niko looked further into the combined wildfire and AQI data as well as other mea
 \includegraphics[scale=0.5]{co_time_series.png}
 \subsection{Sulfur dioxide}
 \includegraphics[scale=0.5]{so2_time_series.png}
+\section{Structure of the neutral network}
+\includegraphics[scale=1]{nn.pdf}
 \end{appendices}
 \end{landscape}
 
