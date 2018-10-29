@@ -27,7 +27,7 @@
 
 The miniproject Smoke Gets in Your Eyes concentrates on wildfires and their effects on air quality. The starting point was the dataset 1.88 Million US Wildfires which is available on Kaggle. Given the effects of wildfires on air quality, air quality data was a natural pairing for the wildfire data. There is an abundance of freely available measurement data on air quality published by the U. S. Environmental Protection Agency (EPA).
 
-There are indications that problems with wildfires are only worsening in the United States.\footnote{See for example the recent article \url{https://fivethirtyeight.com/features/wildfires-in-the-u-s-are-getting-bigger/}.} The adverse health effects of wildfire smoke have also been noted in media recently.\footnote{See e.g. \url{https://www.washingtonpost.com/news/capital-weather-gang/wp/2018/08/07/wildfire-smoke-is-wreaking-havoc-on-the-air-quality-in-the-western-u-s}}As wildfires grow in size and quantity, new solutions that help managing their impact would certainly be helpful.
+There are indications that problems with wildfires are only worsening in the United States.\footnote{See for example the recent article \url{https://fivethirtyeight.com/features/wildfires-in-the-u-s-are-getting-bigger/}.} The adverse health effects of wildfire smoke have also been noted in media recently.\footnote{See e.g. \url{https://www.washingtonpost.com/news/capital-weather-gang/wp/2018/08/07/wildfire-smoke-is-wreaking-havoc-on-the-air-quality-in-the-western-u-s}} As wildfires grow in size and quantity, new solutions that help managing their impact would certainly be helpful.
 
 Although the data used in the project pertains to the United States, a similar approach would work with other countries given similar measurement data. In Europe, countries such as Sweden and Greece have suffered greatly from wildfires recently.
 
@@ -55,7 +55,7 @@ This simplistic approach does have several limitations. First, attaching only a 
 
 \subsection{Data analysis and visualization}
 
-For further analysis of the relationship of the wildfires and air quality, it was deemed necessary to use longer time series of measurements. Thus, new tools were developed, this time in R. Because mapping wildfires to measurements stations takes a long time, the data from the previous phase was taken as the starting point. To first determine whether there was a tangible relationship between the wildfires and air quality in our model, the following scheme was devised: (N.b. Plots can be found in Appendix A.)
+For further analysis of the relationship of the wildfires and air quality, it was deemed necessary to use longer time series of measurements. Thus, new tools were developed, this time in R. Because mapping wildfires to measurement stations takes a long time, the data from the previous phase was taken as the starting point. To first determine whether there was a tangible relationship between the wildfires and air quality in our model, the following scheme was devised: (N.b. Plots can be found in Appendix A.)
 
 \begin{enumerate}[itemsep=-0.5ex]
 	\item Attach to each wildfire all AQI measurements from the day before the fire started to the day after the fire ended (this guarantees at least one measurement for each fire).
@@ -66,7 +66,7 @@ For further analysis of the relationship of the wildfires and air quality, it wa
 	\item If the previous two differences are of similar size, it apperas very likely that the wildfires are not a good indicator for air quality in our model.
 \end{enumerate}
 
-Unfortunately, the results were disappointing. The two differences were indeed of similar size. Moreover, both grew with fire size, but this appears to be because larger fires last longer: they have longer time series and more variance is realized. With the two classes of largest fires (classes 5 and 6) there appeared to be some difference in favor of \emph{max\_change}, but not enough to build regression on. Thus, focus was shifted from air quality index to two gases that should be especially prevalent during wildfires: carbon monoxide and sulfur dioxide. However, results with the two gases did not impress either. First of all, they were not measured in all locations so there was not a nearby measurement for all fires; thus a subset was used. Results with carbon monoxide was very similar to AQI, with only class 6 fires showing inclination towards \emph{max\_change}. Sulfur dioxide measurements behaved best and would form the best starting point for future improvements. Those results do have their own issues, however, with class 5 implying (not necessarily causing) larger changes than class 6, so that part does seem suspect.
+Unfortunately, the results were disappointing; the two differences were indeed of similar size. Moreover, both grew with fire size, but this appears to be because larger fires last longer: they have longer time series and more variance is realized. With the two classes of largest fires (classes 5 and 6) there appeared to be some difference in favor of \emph{max\_change}, but not enough to build regression on. Thus, focus was shifted from air quality index to two gases that should be especially prevalent during wildfires: carbon monoxide and sulfur dioxide. However, results with the two gases did not impress either. First of all, they were not measured in all locations so there was not a nearby measurement for all fires; thus a subset was used. Results with carbon monoxide were very similar to AQI, with only class 6 fires showing inclination towards \emph{max\_change}. Sulfur dioxide measurements behaved best and would form the best starting point for future improvements. Those results do have their own issues, however, with class 5 implying (not necessarily causing) larger changes than class 6, so that part does seem suspect.
 
 \subsection{Prediction model for wildfire severity}
 
@@ -74,7 +74,7 @@ The task to predict the severity of a wildfire is displayed technically as a cla
 
 We tried to solve this problem with a variety of machine learning algorithms, such as XGBoost, Decision Trees and Linear Regression, but the best performance was achieved by Neural Networks. The structure of the network can be seen in Appendix B.
 
-The network consists of five blocks which contain 4 layers each. Every block starts with a Dense layer that has between 256 and 1200 Neurons. After the Dense layers follow Activation layers with ReLu-function, which is the currently best activation-function for deep neural networks.
+The network consists of five blocks which contain 4 layers each. Every block starts with a Dense layer that has between 256 and 1200 neurons. After the Dense layers follow Activation layers with ReLu-function, which is the currently best activation-function for deep neural networks.
 
 To improve performance, Batchnormalization layers were added into every block in order to speed up learning and improve performance with data optimization. Overfitting the network is prevented by using Dropout layers, which have in our case low rates from $0.2$ and $0.3$. More Dropout is not needed, because the Dataset is very large, so the variety on data is huge.
 
@@ -86,9 +86,9 @@ Considering that there are seven classes, meaning that random choice has a proba
 
 It seems reasonable to assume that weather conditions, most notably the direction and speed of wind, affect where the smoke impact of a wildfire is felt. Therefore integrating them into the model could be beneficial. Each fire could also be connected to multiple measurement sites, weighted by distance.
 
-In predicting how severe a wildfire can get, it could be useful to explore more data than what was possible within the scope of this project. For example, it would seem reasonable to assume the size of the fire is affected by the dryness and amount of vegetation in the area. Therefore, using weather data to determine the dryness of the region the wildfire occurs in could help with the prediction. Including the type and amount of combustible vegetation in the area could perhaps be included through explicit data, if such data is available, or roughly estimated by examining the history of wildfires in the area: if fires have occurred recently, there would be less vegetation.
-
 Another important aspect would be to split the prediction into individual components of the air quality index and then reconstruct the index instead of predicting the index directly. Some steps into that direction were already taken with carbon monoxide and sulfur dioxide analyses.
+
+In predicting how severe a wildfire can get, it could be useful to explore more data than what was possible within the scope of this project. For example, it would seem reasonable to assume the size of the fire is affected by the dryness and amount of vegetation in the area. Therefore, using weather data to determine the dryness of the region the wildfire occurs in could help with the prediction. Including the type and amount of combustible vegetation in the area could perhaps be included through explicit data, if such data is available, or roughly estimated by examining the history of wildfires in the area: if fires have occurred recently, there would be less vegetation.
 
 In terms of deploying our solution, future work could include a website that automatically updates air quality predictions for ongoing wildfires.
 
